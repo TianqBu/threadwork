@@ -16,6 +16,9 @@
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run --dir __tests__",

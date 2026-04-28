@@ -6,9 +6,10 @@ Code can talk to it.
 
 ## Requirements
 
-- Node.js **>= 20.10** (the MCP server uses `node:sqlite`, which is stable
-  in Node 22.5+ and shipped final in Node 24; on Node 20 it works behind a
-  flag — Threadwork sets the flag for you).
+- Node.js **>= 22.5** (the MCP server uses `node:sqlite`, which is
+  experimental in 22.5+ and stable in 24.x; Node 20 throws
+  `ERR_UNKNOWN_BUILTIN_MODULE` on import). The published package's
+  `engines.node` enforces this.
 - Claude Code (any recent version that supports user-level MCP servers).
 - ~10 MB of disk for the global SQLite memory file.
 

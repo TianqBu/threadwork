@@ -9,7 +9,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/REPLACE_OWNER/threadwork/ci.yml?branch=main&label=ci)](./.github/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![npm version](https://img.shields.io/npm/v/threadwork-cli?label=npm)](https://www.npmjs.com/package/threadwork-cli)
-[![Node](https://img.shields.io/badge/node-%3E%3D20.10-blue)](./package.json)
+[![Node](https://img.shields.io/badge/node-%3E%3D22.5-blue)](./package.json)
 [![Discord](https://img.shields.io/badge/discord-join-5865F2)](https://discord.gg/REPLACE_INVITE)
 
 ## Quickstart
