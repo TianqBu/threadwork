@@ -76,7 +76,7 @@
     {
       "id": "W6",
       "title": "Memory recall + role memory integration + replay JSON dump + demo cast",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "MCP tools memory_recall_episodes(query, k=5) (FTS5-ranked), memory_recall_facts(key), memory_get_working(session_id, key) implemented with unit tests; recall returns rows ordered by FTS5 rank score",
         "All 4 default role yamls updated to include memory_recall in tools_allowed and memory-aware language in system_prompt; an integration test exercises the writer role recalling an earlier researcher episode",
@@ -87,7 +87,7 @@
     {
       "id": "W7",
       "title": "trace_record middleware + polished replay UI + closed beta scaffolding",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "MCP tool trace_record(task_id, role, event_type, content, parent_event_id?) writes to a traces table with FK to episodes; an automatic middleware records a trace event for every memory_* call without role-side action",
         "packages/replay-ui generates a single-file static HTML (embedded JSON, vanilla JS, no framework) implementing a per-role swim-lane timeline with click-to-detail panel; DOM snapshot test asserts presence of >=2 swim-lanes, >=10 events, and detail panel shell",

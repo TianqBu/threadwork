@@ -54,6 +54,7 @@ if (argv[0] === "replay" && argv[1]) {
   const opts = {
     taskId: argv[1],
     json: argv.includes("--json"),
+    serve: argv.includes("--serve"),
     ...(dbIdx >= 0 && argv[dbIdx + 1] ? { dbPath: argv[dbIdx + 1] } : {}),
   };
   const eventCount = await replay(opts);
