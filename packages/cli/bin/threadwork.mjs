@@ -48,5 +48,17 @@ if (argv[0] === "roles" && argv[1] === "create" && argv[2]) {
   }
 }
 
+if (argv[0] === "replay" && argv[1]) {
+  const { replay } = await import("../dist/cli/replay.js");
+  const dbIdx = argv.indexOf("--db");
+  const opts = {
+    taskId: argv[1],
+    json: argv.includes("--json"),
+    ...(dbIdx >= 0 && argv[dbIdx + 1] ? { dbPath: argv[dbIdx + 1] } : {}),
+  };
+  const eventCount = await replay(opts);
+  process.exit(eventCount > 0 ? 0 : 1);
+}
+
 console.error(`unknown command: ${argv.join(" ")}\nrun 'threadwork --help' for usage.`);
 process.exit(1);

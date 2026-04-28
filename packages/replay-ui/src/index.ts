@@ -1,18 +1,12 @@
-// Replay UI generator entry. The full vanilla-JS swim-lane timeline lands in
-// W7. For W2 the entry exports a stub used by the build / test gates.
+// replay-ui public entry. v0.1 ships the JSON dump path (W6) and the
+// vanilla-JS HTML timeline (W7).
 
 export const REPLAY_UI_VERSION = "0.1.0";
 
-export interface TraceEvent {
-  id: number;
-  task_id: string;
-  role: string;
-  event_type: string;
-  content: string;
-  parent_event_id: number | null;
-  ts: string;
-}
+export { dumpAsJson, type DumpAsJsonOptions } from "./json-dump.js";
+export { readTask, type ReadTaskOptions, type ReadTaskResult } from "./db-reader.js";
+export { type TraceEvent, type EpisodeRow, type ReplayDump } from "./types.js";
 
-export function rolesIn(events: TraceEvent[]): string[] {
+export function rolesIn(events: { role: string }[]): string[] {
   return Array.from(new Set(events.map((e) => e.role))).sort();
 }

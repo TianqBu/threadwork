@@ -64,7 +64,7 @@
     {
       "id": "W5",
       "title": "Memory MCP: schema + write tools + bench fixture + cost projector",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "packages/mcp-server/src/db/schema.sql defines tables episodes(id, task_id, role, ts, content), facts(id, key, value, confidence, source_episode_id), working_context(session_id, key, value, expires_at) and an FTS5 virtual table over episodes(content)",
         "packages/mcp-server exposes MCP tools memory_write_episode, memory_write_fact, memory_set_working with zod input validation, content-hash dedup, and 1MB-per-task size cap; unit tests cover validation, dedup, and the cap",

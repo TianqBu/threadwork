@@ -44,6 +44,9 @@ importers:
       chokidar:
         specifier: 4.0.1
         version: 4.0.1
+      threadwork-replay-ui:
+        specifier: workspace:*
+        version: link:../replay-ui
       yaml:
         specifier: 2.6.1
         version: 2.6.1

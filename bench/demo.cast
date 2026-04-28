@@ -1,0 +1,13 @@
+{"version": 2, "width": 100, "height": 24, "timestamp": 1745366400, "title": "threadwork demo (placeholder)", "env": {"SHELL": "bash", "TERM": "xterm-256color"}, "idle_time_limit": 2}
+[0.0, "o", "$ "]
+[0.5, "o", "threadwork --version\r\n"]
+[0.7, "o", "threadwork v0.1.0\r\n$ "]
+[1.4, "o", "threadwork roles list\r\n"]
+[1.8, "o", "NAME        SOURCE   TOOLS  PATH\r\nresearcher  global   10     ~/.threadwork/roles/researcher.yaml\r\ncoder       global   10     ~/.threadwork/roles/coder.yaml\r\nreviewer    global   6      ~/.threadwork/roles/reviewer.yaml\r\nwriter      global   4      ~/.threadwork/roles/writer.yaml\r\n$ "]
+[3.2, "o", "pnpm bench:run\r\n"]
+[3.6, "o", "bench:run wrote bench/last-run.json\r\n  episodes: 25, input_tokens: 12950, output_tokens: 6060\r\n$ "]
+[5.0, "o", "pnpm bench:cost\r\n"]
+[5.3, "o", "bench:cost wrote bench/cost-report.json\r\n  model=claude-haiku-4-5, median=$0.0348, ceiling=$0.05\r\n$ "]
+[7.0, "o", "threadwork replay bench-001 --json | head -20\r\n"]
+[7.4, "o", "{\r\n  \"task_id\": \"bench-001\",\r\n  \"generated_at\": \"2026-04-28T01:30:00Z\",\r\n  \"roles\": [\"researcher\", \"reviewer\", \"writer\"],\r\n  \"totals\": { \"events\": 12, \"episodes\": 5 },\r\n  ...\r\n$ "]
+[9.0, "o", "# placeholder cast — re-record live in W8 with a populated SQLite\r\n$ "]

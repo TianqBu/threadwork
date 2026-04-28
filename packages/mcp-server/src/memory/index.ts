@@ -7,6 +7,17 @@ export {
   type SetWorkingResult,
 } from "./write.js";
 export {
+  recallEpisodes,
+  recallFacts,
+  getWorking,
+  RecallEpisodesInput,
+  RecallFactsInput,
+  GetWorkingInput,
+  type RecalledEpisode,
+  type RecalledFact,
+  type WorkingContextEntry,
+} from "./recall.js";
+export {
   WriteEpisodeInput,
   WriteFactInput,
   SetWorkingInput,
