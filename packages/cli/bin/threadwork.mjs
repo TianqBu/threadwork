@@ -33,8 +33,8 @@ Available commands:
 
 if (argv[0] === "init") {
   const { init } = await import("../dist/cli/init.js");
-  const r = init({ dryRun: argv.includes("--dry-run") });
-  process.exit(r.changed || r.dryRun ? 0 : 0);
+  init({ dryRun: argv.includes("--dry-run") });
+  process.exit(0);
 }
 
 if (argv[0] === "uninstall") {
@@ -70,8 +70,18 @@ if (argv[0] === "replay") {
   const { replay } = await import("../dist/cli/replay.js");
   const dbIdx = argv.indexOf("--db");
   const wantsLast = argv.includes("--last");
-  // First positional that isn't a flag (so `replay --last` works).
-  const positional = argv.slice(1).find((a) => !a.startsWith("--") && argv[argv.indexOf(a) - 1] !== "--db");
+  // First positional that isn't a flag (so `replay --last` works). Use the
+  // index from `findIndex` directly so we don't risk argv.indexOf returning
+  // the wrong slot when the positional value happens to equal another argv
+  // entry (e.g. a task id literally called "--db").
+  let positional;
+  for (let i = 1; i < argv.length; i++) {
+    const a = argv[i];
+    if (a.startsWith("--")) continue;
+    if (argv[i - 1] === "--db") continue;
+    positional = a;
+    break;
+  }
   if (!wantsLast && !positional) {
     console.error("replay requires either a task_id or --last");
     process.exit(1);
@@ -83,8 +93,11 @@ if (argv[0] === "replay") {
     serve: argv.includes("--serve"),
     ...(dbIdx >= 0 && argv[dbIdx + 1] ? { dbPath: argv[dbIdx + 1] } : {}),
   };
-  const eventCount = await replay(opts);
-  process.exit(eventCount > 0 ? 0 : 1);
+  await replay(opts);
+  // Exit 0 in all cases — replay returning 0 events is a legitimate "no
+  // tasks yet" or "task has no events" result, not a failure. Errors
+  // from replay() throw and bubble up to a nonzero exit naturally.
+  process.exit(0);
 }
 
 console.error(`unknown command: ${argv.join(" ")}\nrun 'threadwork --help' for usage.`);
