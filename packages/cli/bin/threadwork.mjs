@@ -24,8 +24,9 @@ Available commands:
   roles list                      List discovered role yamls.
   roles show <name>               Print the rendered role contract.
   roles create <name> [--force]   Scaffold a new role yaml.
-  replay <task_id> [--serve|--json] [--db <path>]
+  replay <task_id|--last> [--serve|--json] [--db <path>]
                                   Render the step-level replay HTML.
+                                  --last picks the most recent task in the db.
 `);
   process.exit(0);
 }
@@ -65,11 +66,19 @@ if (argv[0] === "roles" && argv[1] === "create" && argv[2]) {
   }
 }
 
-if (argv[0] === "replay" && argv[1]) {
+if (argv[0] === "replay") {
   const { replay } = await import("../dist/cli/replay.js");
   const dbIdx = argv.indexOf("--db");
+  const wantsLast = argv.includes("--last");
+  // First positional that isn't a flag (so `replay --last` works).
+  const positional = argv.slice(1).find((a) => !a.startsWith("--") && argv[argv.indexOf(a) - 1] !== "--db");
+  if (!wantsLast && !positional) {
+    console.error("replay requires either a task_id or --last");
+    process.exit(1);
+  }
   const opts = {
-    taskId: argv[1],
+    ...(positional ? { taskId: positional } : {}),
+    last: wantsLast,
     json: argv.includes("--json"),
     serve: argv.includes("--serve"),
     ...(dbIdx >= 0 && argv[dbIdx + 1] ? { dbPath: argv[dbIdx + 1] } : {}),

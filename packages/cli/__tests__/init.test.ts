@@ -6,8 +6,10 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
+import { platform } from "node:os";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { Writable } from "node:stream";
@@ -133,6 +135,43 @@ describe("threadwork init", () => {
     const r = init({ claudeConfigPath: configPath, threadworkHome: home, rolesSource, out });
     expect(r.rolesCopied).toBe(0);
     expect(readdirSync(join(home, "roles"))).toEqual(["my-pm.yaml"]);
+  });
+
+  it("--dry-run preview reflects existing roles (does not falsely promise to copy)", () => {
+    // Pre-existing user role: dry-run must report rolesCopied=0, matching
+    // what a real run would do. The earlier code masked the rolesDir state
+    // when dryRun was set, leading to a misleading preview.
+    mkdirSync(join(home, "roles"), { recursive: true });
+    writeFileSync(join(home, "roles", "my-pm.yaml"), "name: my-pm\n");
+    const out = new Buf();
+    const r = init({
+      claudeConfigPath: configPath,
+      threadworkHome: home,
+      rolesSource,
+      dryRun: true,
+      out,
+    });
+    expect(r.rolesCopied).toBe(0);
+    expect(out.buf).toMatch(/would copy 0 default role/);
+  });
+
+  it("refuses to rewrite when ~/.claude.json is a symlink", () => {
+    if (platform() === "win32") {
+      // Creating symlinks on Windows requires admin or developer-mode;
+      // skip this test off-Unix where the security concern is the same
+      // but the test setup is unreliable.
+      return;
+    }
+    const target = join(tmpRoot, "real-claude.json");
+    writeFileSync(target, JSON.stringify({ mcpServers: {} }, null, 2));
+    symlinkSync(target, configPath);
+    const out = new Buf();
+    expect(() =>
+      init({ claudeConfigPath: configPath, threadworkHome: home, rolesSource, out }),
+    ).toThrow(/symlink/);
+    // Original target untouched.
+    const after = JSON.parse(readFileSync(target, "utf8"));
+    expect(after.mcpServers).toEqual({});
   });
 });
 

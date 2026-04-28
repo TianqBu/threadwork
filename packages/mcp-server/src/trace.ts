@@ -47,8 +47,11 @@ export interface AutoTraceContext {
 
 /**
  * Wrap a memory function so every successful call records a trace event.
- * The wrapped function's return value is unchanged. Errors propagate; no
- * trace is recorded on error so failures do not pollute the timeline.
+ * The wrapped function's return value is unchanged. Errors from the wrapped
+ * function propagate (no trace recorded — failures should not pollute the
+ * timeline). Errors from the trace recording itself are swallowed and logged
+ * to stderr: trace is an audit side-channel and must not corrupt the result
+ * of a successful primary operation.
  *
  * If the wrapped function returns an object with a numeric `id` field
  * (e.g. writeEpisode -> { id: number }), that id is recorded on the
@@ -61,13 +64,21 @@ export function withAutoTrace<TArgs extends unknown[], TReturn>(
 ): (...args: TArgs) => TReturn {
   return (...args: TArgs): TReturn => {
     const result = fn(...args);
-    recordTrace(ctx.db, {
-      task_id: ctx.task_id,
-      role: ctx.role,
-      event_type: ctx.event_type,
-      content: summariseArgs(args),
-      episode_id: extractEpisodeId(result),
-    });
+    try {
+      recordTrace(ctx.db, {
+        task_id: ctx.task_id,
+        role: ctx.role,
+        event_type: ctx.event_type,
+        content: summariseArgs(args),
+        episode_id: extractEpisodeId(result),
+      });
+    } catch (err) {
+      process.stderr.write(
+        `[threadwork] auto-trace recording failed (${ctx.event_type}): ${
+          err instanceof Error ? err.message : String(err)
+        }\n`,
+      );
+    }
     return result;
   };
 }

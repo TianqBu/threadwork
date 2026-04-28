@@ -68,5 +68,5 @@ diff the two replays.
 
 ## Next
 
-- [custom-role.md](./custom-role.md) — write your own role from scratch
-- [troubleshooting.md](./troubleshooting.md) — what to do when something is off
+- [custom-role.en.md](./custom-role.en.md) — write your own role from scratch
+- [troubleshooting.en.md](./troubleshooting.en.md) — what to do when something is off

@@ -22,7 +22,16 @@ const cast = resolve(root, "bench/demo.cast");
 const gif = resolve(root, "bench/demo.gif");
 const MAX_BYTES = 2 * 1024 * 1024;
 
+// Pre-launch placeholder is a 43-byte 1x1 transparent GIF89a so
+// `bench:gif-check` can stay green during the closed alpha. The check
+// below recognises that exact stub and warns instead of asserting "ok",
+// so a public-launch readiness sweep can grep for the warning to find
+// the missing render.
+const PLACEHOLDER_BYTES = 43;
+const MIN_REAL_BYTES = 50 * 1024; // a real ~30s rendered cast lands ~200kB+
+
 if (process.argv.includes("--check")) {
+  const strict = process.argv.includes("--strict");
   if (!existsSync(gif)) {
     console.error(`bench/demo.gif missing`);
     process.exit(1);
@@ -31,6 +40,26 @@ if (process.argv.includes("--check")) {
   if (size > MAX_BYTES) {
     console.error(`bench/demo.gif is ${size} bytes (> ${MAX_BYTES})`);
     process.exit(1);
+  }
+  if (size <= PLACEHOLDER_BYTES) {
+    const msg =
+      `bench/demo.gif is a ${size}-byte placeholder (1x1 transparent GIF). ` +
+      `Render the real cast before public launch: install agg ` +
+      `(cargo install --git https://github.com/asciinema/agg) and run ` +
+      `'node bench/build-gif.mjs'.`;
+    if (strict) {
+      console.error(msg);
+      process.exit(1);
+    }
+    console.warn(`[warn] ${msg}`);
+    console.log(`bench/demo.gif placeholder ok (${size} bytes, non-strict)`);
+    process.exit(0);
+  }
+  if (size < MIN_REAL_BYTES) {
+    console.warn(
+      `[warn] bench/demo.gif is ${size} bytes — suspiciously small for a real ` +
+        `terminal recording. Did the render finish?`,
+    );
   }
   console.log(`bench/demo.gif ok (${size} bytes)`);
   process.exit(0);

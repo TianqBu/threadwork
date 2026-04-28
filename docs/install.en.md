@@ -97,4 +97,4 @@ threadwork roles list          # should show 4 default roles
 ```
 
 If `claude mcp list` does not show `threadwork`, see
-[troubleshooting.md](./troubleshooting.md).
+[troubleshooting.en.md](./troubleshooting.en.md).

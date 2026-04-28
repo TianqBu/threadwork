@@ -9,6 +9,7 @@
 import {
   copyFileSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
   readdirSync,
@@ -17,6 +18,7 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 export interface InitOptions {
   claudeConfigPath?: string;
@@ -46,7 +48,22 @@ export function init(opts: InitOptions = {}): InitResult {
   const args = opts.serverArgs ?? [];
   const now = opts.now ?? Date.now;
 
+  // Refuse to operate on a symlinked config. ~/.claude.json should always
+  // be a regular file; a symlink there is either a misconfiguration or a
+  // privilege-escalation vector (a backup copy of /etc/passwd into the
+  // user's home, etc.). lstat is the right primitive — readFile and rename
+  // both follow / replace through the link otherwise.
   const existed = existsSync(configPath);
+  if (existed) {
+    const st = lstatSync(configPath);
+    if (st.isSymbolicLink()) {
+      throw new Error(
+        `${configPath} is a symlink; refusing to rewrite. ` +
+          "If this is intentional, replace the symlink with a regular JSON file before running threadwork init.",
+      );
+    }
+  }
+
   let raw = "{}";
   if (existed) raw = readFileSync(configPath, "utf8");
 
@@ -96,11 +113,12 @@ export function init(opts: InitOptions = {}): InitResult {
   }
 
   // Copy bundled roles only if the user's roles dir is empty. Never
-  // clobber an existing role yaml.
+  // clobber an existing role yaml. Check the real filesystem state even
+  // for dry-run so the preview matches what would actually happen.
   let rolesCopied = 0;
   const src = opts.rolesSource ?? defaultRolesSource();
   if (src && existsSync(src)) {
-    const existing = !opts.dryRun && existsSync(rolesDir) ? readdirSync(rolesDir) : [];
+    const existing = existsSync(rolesDir) ? readdirSync(rolesDir) : [];
     if (existing.length === 0) {
       for (const name of readdirSync(src)) {
         if (!name.endsWith(".yaml")) continue;
@@ -136,9 +154,12 @@ export function init(opts: InitOptions = {}): InitResult {
 
 function defaultRolesSource(): string | null {
   // When installed globally, /roles ships next to /dist in the tarball
-  // (see packages/cli prepack). Resolve relative to this module.
+  // (see packages/cli prepack). Resolve relative to this module via
+  // fileURLToPath so Windows drive letters and UNC paths both decode
+  // correctly (the older `pathname.replace(/^\/([A-Za-z]:)/, "$1")` trick
+  // mishandled UNC and trailing-slash edge cases).
   try {
-    const here = dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
+    const here = dirname(fileURLToPath(import.meta.url));
     const candidate = resolve(here, "..", "..", "roles");
     if (existsSync(candidate)) return candidate;
     const candidate2 = resolve(here, "..", "..", "..", "roles");

@@ -74,6 +74,40 @@ describe("withAutoTrace middleware", () => {
     expect(countTraces()).toBe(0);
   });
 
+  it("swallows recordTrace errors so a successful primary call returns its result", () => {
+    // Simulate a broken trace store by closing the db right before recordTrace
+    // would run. The wrapped fn uses a *separate* in-memory DB so its primary
+    // operation succeeds; only the trace insert hits the closed handle.
+    const primary = (input: { v: number }) => ({ id: input.v, ok: true });
+    const wrapped = withAutoTrace(primary, {
+      db,
+      task_id: "swallow-1",
+      role: "writer",
+      event_type: "memory.write_episode",
+    });
+    // Close the trace db so recordTrace will throw.
+    db.close();
+
+    // Re-open under a different handle for afterEach cleanup, but rebind
+    // to keep the trace-side handle (the closure capture in `wrapped`) closed.
+    let result: { id: number; ok: boolean } | undefined;
+    const errorBefore = process.stderr.write;
+    let warningSeen = "";
+    process.stderr.write = ((chunk: string) => {
+      warningSeen += chunk;
+      return true;
+    }) as typeof process.stderr.write;
+    try {
+      result = wrapped({ v: 42 });
+    } finally {
+      process.stderr.write = errorBefore;
+      // restore db for afterEach cleanup
+      db = openDb({ path: join(tmpRoot, "trace.sqlite") });
+    }
+    expect(result).toEqual({ id: 42, ok: true });
+    expect(warningSeen).toMatch(/auto-trace recording failed/);
+  });
+
   it("records the wrapped function's episode id on the trace row", () => {
     const wrapped = withAutoTrace(
       (input: { task_id: string; role: string; content: string }) => writeEpisode(db, input),

@@ -54,3 +54,29 @@ export function readTask(opts: ReadTaskOptions): ReadTaskResult {
     db.close();
   }
 }
+
+/**
+ * Return the task_id of the most recently active task, judged by max(traces.id)
+ * with a fallback to max(episodes.id) for tasks that have only memory writes
+ * (no explicit trace events). Returns null if the database has no rows.
+ */
+export function findLastTaskId(dbPath: string): string | null {
+  const db = new _sqlite.DatabaseSync(dbPath);
+  try {
+    const fromTraces = db
+      .prepare(
+        `SELECT task_id FROM traces ORDER BY id DESC LIMIT 1`,
+      )
+      .all() as Array<{ task_id: string }>;
+    if (fromTraces.length > 0) return fromTraces[0]!.task_id;
+    const fromEpisodes = db
+      .prepare(
+        `SELECT task_id FROM episodes ORDER BY id DESC LIMIT 1`,
+      )
+      .all() as Array<{ task_id: string }>;
+    if (fromEpisodes.length > 0) return fromEpisodes[0]!.task_id;
+    return null;
+  } finally {
+    db.close();
+  }
+}

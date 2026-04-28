@@ -5,10 +5,8 @@
 // server.deps.external. Loading via Node's CJS require sidesteps the vite
 // resolver entirely while preserving full runtime behaviour.
 
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { runMigrations } from "./migrations.js";
 
 const _require = createRequire(import.meta.url);
 
@@ -33,17 +31,16 @@ export interface DatabaseSync {
   close(): void;
 }
 
-const here = dirname(fileURLToPath(import.meta.url));
-const SCHEMA_PATH = resolve(here, "schema.sql");
-
 export interface OpenDbOptions {
   path: string;
-  schemaPath?: string;
+  /** Skip migration runner (for tests that want a raw, empty database). */
+  skipMigrations?: boolean;
 }
 
 export function openDb(opts: OpenDbOptions): DatabaseSync {
   const db = new _sqlite.DatabaseSync(opts.path);
-  const schema = readFileSync(opts.schemaPath ?? SCHEMA_PATH, "utf8");
-  db.exec(schema);
+  if (!opts.skipMigrations) {
+    runMigrations(db);
+  }
   return db;
 }
