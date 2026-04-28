@@ -1,8 +1,5 @@
-// Step-level trace recorder. Provides:
-//   1. recordTrace(db, ...) — direct insert for the MCP `trace_record` tool.
-//   2. withAutoTrace(fn, ctx) — HOF that records a trace event for every
-//      call to the wrapped function. Used to auto-instrument memory_*
-//      tools so role authors do not need to call trace_record by hand.
+// Step-level trace recorder. Auto-traces memory_* tools so role authors
+// do not need to call trace_record by hand.
 
 import { z } from "zod";
 import type { DatabaseSync } from "./db/index.js";

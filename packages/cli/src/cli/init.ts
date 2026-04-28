@@ -1,16 +1,10 @@
 // `threadwork init` — register the Threadwork MCP server in ~/.claude.json
 // and lay down ~/.threadwork/{roles,db}.
 //
-// Hard requirement: the rewrite of ~/.claude.json is the most sensitive
-// thing this tool does. The flow is:
-//   1. Read existing config (or {} if missing).
-//   2. If the file existed and parsed cleanly, write a byte-identical
-//      backup to <path>.bak.<unix-ts>.
-//   3. Merge into mcpServers.threadwork, leaving every other key alone.
-//   4. Validate the merged object via JSON.parse(JSON.stringify(...)).
-//   5. Atomic rename: write to <path>.new, fsync, rename onto <path>.
-// Anything failing in 1–4 means no write happens. The original is
-// untouched.
+// The ~/.claude.json rewrite is the most sensitive operation in the tool;
+// the contract is: backup before mutation, validate before write, atomic
+// rename. A failure anywhere before the rename leaves the original file
+// byte-identical.
 
 import {
   copyFileSync,

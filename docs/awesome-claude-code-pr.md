@@ -51,15 +51,15 @@ Apache-2.0/BSD-3/BSD-2/ISC only on direct + transitive deps.
 
 Maintainers usually look for:
 
-- [x] License is permissive (MIT)
-- [x] Repo has a working README with quickstart
-- [x] Project is non-trivially distinct from existing entries (compare
+- [ ] License is permissive (MIT)
+- [ ] Repo has a working README with quickstart
+- [ ] Project is non-trivially distinct from existing entries (compare
       against ruflo, deer-flow, paperclip)
-- [x] Last commit is recent
-- [x] `npm install -g <pkg>` actually works on a clean machine
-- [x] Repo has at least a smoke CI run
+- [ ] Last commit is recent
+- [ ] `npm install -g <pkg>` actually works on a clean machine
+- [ ] Repo has at least a smoke CI run
 
-If any is unchecked at PR time, do not open the PR — fix first.
+Tick at PR time, with evidence. Do not open the PR with empty boxes.
 
 ## Timeline
 
