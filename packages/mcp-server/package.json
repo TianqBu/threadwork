@@ -11,7 +11,7 @@
   },
   "files": ["bin", "dist"],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node ../../scripts/copy-schema.mjs",
     "test": "vitest run --dir __tests__"
   },
   "dependencies": {

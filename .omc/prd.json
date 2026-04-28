@@ -42,7 +42,7 @@
     {
       "id": "W3",
       "title": "Role yaml schema + role loader with hot-reload + roles list CLI",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "packages/cli/src/role/schema.ts exports a zod schema for: name, description, system_prompt, tools_allowed (string[]), budget.max_tokens (int), budget.max_duration_sec (int)",
         "packages/cli/src/role/loader.ts: scans ~/.threadwork/roles/*.yaml (global) and ./.threadwork/roles/*.yaml (project, project overrides global); chokidar watcher emits change events within 500ms in tests",
@@ -53,7 +53,7 @@
     {
       "id": "W4",
       "title": "4 default roles + 3 orchestration patterns + roles show/create CLI + skill markdown",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "roles/researcher.yaml, roles/coder.yaml, roles/reviewer.yaml, roles/writer.yaml exist; each yaml validates against the W3 schema and contains a non-trivial system_prompt (>=200 chars), explicit tools_allowed, and budget fields",
         "packages/skill/skill.md is a Claude Code Skill that documents 3 orchestration patterns: research-then-write (sequential), parallel-review (3 reviewers vote), code-review-fix (loop, max 3 iter). Each pattern has a worked example block.",

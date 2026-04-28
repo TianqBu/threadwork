@@ -1,0 +1,21 @@
+{
+  "_comment": "Anthropic public list pricing snapshot used by pnpm bench:cost. Update at each release; this snapshot is authoritative for AC10 projections until then.",
+  "snapshot_date": "2026-04-28",
+  "source": "https://www.anthropic.com/pricing (manual snapshot — re-verify before each release)",
+  "currency": "USD",
+  "models": {
+    "claude-opus-4-7": {
+      "input_per_mtok": 15.0,
+      "output_per_mtok": 75.0
+    },
+    "claude-sonnet-4-6": {
+      "input_per_mtok": 3.0,
+      "output_per_mtok": 15.0
+    },
+    "claude-haiku-4-5": {
+      "input_per_mtok": 0.8,
+      "output_per_mtok": 4.0
+    }
+  },
+  "default_model": "claude-haiku-4-5"
+}

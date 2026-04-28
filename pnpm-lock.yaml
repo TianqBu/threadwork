@@ -32,6 +32,9 @@ importers:
       vitest:
         specifier: ^2.1.5
         version: 2.1.5(@types/node@22.19.17)
+      yaml:
+        specifier: ^2.6.1
+        version: 2.6.1
 
   packages/cli:
     dependencies:

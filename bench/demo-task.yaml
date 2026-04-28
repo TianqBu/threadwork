@@ -1,0 +1,50 @@
+# Threadwork bench fixture. Drives `pnpm bench:run` deterministically and
+# is the canonical input that AC10's cost projection runs against.
+
+name: demo-task
+description: |
+  A short research-then-write run with reviewer feedback, sized so that the
+  full pattern produces 25 episodes. This is the standard task referenced
+  by AC10 and the W6 stop condition.
+
+pattern: research-then-write-with-review
+
+# Roles invoked, in order. `iteration` is informational; the runner may
+# replay roles with the same name across iterations.
+role_sequence:
+  - role: researcher
+    expected_episode_count: 8     # tool calls + tool results + summary
+  - role: writer
+    expected_episode_count: 5
+  - role: reviewer
+    expected_episode_count: 3
+  - role: writer
+    expected_episode_count: 6     # iteration 2 incorporates reviewer feedback
+  - role: reviewer
+    expected_episode_count: 3
+
+input_prompt: |
+  Compare the Anthropic Skill spec and the OpenAI Assistant API on these
+  axes: how custom system prompts are defined, where state is persisted,
+  and how multi-step workflows are expressed. Cite all claims.
+
+# Token ceilings (per role). The bench runner enforces these; if a role
+# emits more tokens than its ceiling, the run fails fast.
+token_ceilings:
+  researcher:
+    max_input_tokens: 3000
+    max_output_tokens: 4000
+  writer:
+    max_input_tokens: 5000
+    max_output_tokens: 2500
+  reviewer:
+    max_input_tokens: 4000
+    max_output_tokens: 1000
+
+# Total target: 25 episodes (within ~10% slack).
+target_episode_count: 25
+target_episode_slack_pct: 10
+
+# AC10 cost-projection ceiling (2026 dev budget): $0.05 per run.
+# Connected ADR: docs/decisions/0001-no-embeddings-v01.md
+cost_ceiling_usd: 0.05
