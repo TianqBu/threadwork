@@ -63,7 +63,10 @@ CREATE TABLE IF NOT EXISTS traces (
   event_type TEXT NOT NULL,
   content TEXT NOT NULL DEFAULT '',
   parent_event_id INTEGER,
+  episode_id INTEGER,
   ts TEXT NOT NULL DEFAULT (datetime('now')),
-  FOREIGN KEY (parent_event_id) REFERENCES traces(id) ON DELETE SET NULL
+  FOREIGN KEY (parent_event_id) REFERENCES traces(id) ON DELETE SET NULL,
+  FOREIGN KEY (episode_id) REFERENCES episodes(id) ON DELETE SET NULL
 );
 CREATE INDEX IF NOT EXISTS idx_traces_task ON traces(task_id);
+CREATE INDEX IF NOT EXISTS idx_traces_episode ON traces(episode_id);

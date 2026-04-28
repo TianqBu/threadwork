@@ -24,7 +24,14 @@ Then in a Claude Code session, the `threadwork` skill becomes available;
 trigger one of the orchestration patterns and inspect what happened with
 `threadwork replay <task_id>` (or `--serve` to open it in your browser).
 
-![demo](./bench/demo.gif)
+## Demo
+
+A scripted asciinema cast lives at [bench/demo.cast](./bench/demo.cast).
+Render it to a gif with `node bench/build-gif.mjs` (needs
+[`agg`](https://github.com/asciinema/agg) on PATH); the rendered hero
+gif is committed at `bench/demo.gif` and gated to ≤2 MB by CI. The cast
+is intentionally slim — the goal is to show you the shape of the tool
+in 30 seconds, not to be impressive.
 
 ## Why not X
 

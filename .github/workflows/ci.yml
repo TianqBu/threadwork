@@ -47,3 +47,11 @@ jobs:
       - name: License check
         if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
         run: pnpm run license-check
+
+      - name: Publish dry-run (cli)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
+        run: pnpm --filter threadwork-cli publish --dry-run --no-git-checks
+
+      - name: Demo gif size gate
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
+        run: pnpm run bench:gif-check

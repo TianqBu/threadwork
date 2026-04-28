@@ -73,4 +73,16 @@ describe("withAutoTrace middleware", () => {
     expect(() => wrapped()).toThrow("boom");
     expect(countTraces()).toBe(0);
   });
+
+  it("records the wrapped function's episode id on the trace row", () => {
+    const wrapped = withAutoTrace(
+      (input: { task_id: string; role: string; content: string }) => writeEpisode(db, input),
+      { db, task_id: "fk-1", role: "writer", event_type: "memory.write_episode" },
+    );
+    const w = wrapped({ task_id: "fk-1", role: "writer", content: "linked episode" });
+    const row = db
+      .prepare(`SELECT episode_id FROM traces WHERE task_id = ? ORDER BY id DESC LIMIT 1`)
+      .get("fk-1") as { episode_id: number };
+    expect(row.episode_id).toBe(w.id);
+  });
 });

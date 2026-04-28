@@ -16,12 +16,29 @@ if (argv[0] === "--help" || argv[0] === "-h") {
   console.log(`Usage: threadwork <command> [options]
 
 Available commands:
-  roles list             List discovered role yamls.
-  roles show <name>      Print the rendered role contract. (W4)
-  roles create <name>    Scaffold a new role yaml. (W4)
-  init                   Register the Threadwork MCP server. (W7+)
-  replay <task_id>       Open the step-level replay UI for a task. (W7)
+  init [--dry-run]                Register the Threadwork MCP server in
+                                  ~/.claude.json (with backup) and lay
+                                  down ~/.threadwork/{roles,db}.
+  uninstall [--purge]             Remove the MCP server entry. --purge
+                                  also deletes ~/.threadwork.
+  roles list                      List discovered role yamls.
+  roles show <name>               Print the rendered role contract.
+  roles create <name> [--force]   Scaffold a new role yaml.
+  replay <task_id> [--serve|--json] [--db <path>]
+                                  Render the step-level replay HTML.
 `);
+  process.exit(0);
+}
+
+if (argv[0] === "init") {
+  const { init } = await import("../dist/cli/init.js");
+  const r = init({ dryRun: argv.includes("--dry-run") });
+  process.exit(r.changed || r.dryRun ? 0 : 0);
+}
+
+if (argv[0] === "uninstall") {
+  const { uninstall } = await import("../dist/cli/uninstall.js");
+  uninstall({ purge: argv.includes("--purge") });
   process.exit(0);
 }
 
