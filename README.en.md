@@ -69,12 +69,13 @@ closed beta plan and feedback channels. Licensed under MIT.
 
 ## Docs
 
-- [docs/install.md](./docs/install.md) — install, MCP registration, uninstall
-- [docs/first-run.md](./docs/first-run.md) — your first orchestration in 60 s
-- [docs/custom-role.md](./docs/custom-role.md) — write and publish a role yaml
-- [docs/troubleshooting.md](./docs/troubleshooting.md) — what to check when it breaks
+- [docs/install.en.md](./docs/install.en.md) — install, MCP registration, uninstall
+- [docs/first-run.en.md](./docs/first-run.en.md) — your first orchestration in 60 s
+- [docs/custom-role.en.md](./docs/custom-role.en.md) — write and publish a role yaml
+- [docs/troubleshooting.en.md](./docs/troubleshooting.en.md) — what to check when it breaks
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — issues only during the alpha
 - [SECURITY.md](./SECURITY.md) — vulnerability reporting
+- [CHANGELOG.md](./CHANGELOG.md) — release history
 
 ## License
 

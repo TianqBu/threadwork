@@ -1,34 +1,36 @@
-# Install
+[English](./install.en.md) | **简体中文**
 
-Threadwork is an npm package plus an MCP server. Installing means: getting
-the binary, then registering the MCP server in `~/.claude.json` so Claude
-Code can talk to it.
+# 安装
 
-## Requirements
+Threadwork 是一个 npm 包加上一个 MCP server。"装好" 包含两步：拿到
+binary，然后把 MCP server 注册进 `~/.claude.json` 让 Claude Code 能用。
 
-- Node.js **>= 22.5** (the MCP server uses `node:sqlite`, which is
-  experimental in 22.5+ and stable in 24.x; Node 20 throws
-  `ERR_UNKNOWN_BUILTIN_MODULE` on import). The published package's
-  `engines.node` enforces this.
-- Claude Code (any recent version that supports user-level MCP servers).
-- ~10 MB of disk for the global SQLite memory file.
+## 系统要求
+
+- Node.js **>= 22.5**（MCP server 用 `node:sqlite`：Node 22.5 起标
+  experimental，Node 24.x 起 stable；Node 20 直接抛
+  `ERR_UNKNOWN_BUILTIN_MODULE`）。已发布的 npm 包通过 `engines.node`
+  强制这个版本。
+- Claude Code（任何近期版本，支持用户级 MCP server 即可）。
+- 全局 SQLite 记忆文件大约占 10 MB 磁盘空间。
 
 ## macOS / Linux
 
 ```bash
 npm install -g threadwork-cli
-threadwork --version           # sanity check
-threadwork init                # registers MCP server, writes default roles
+threadwork --version           # 确认装好了
+threadwork init                # 注册 MCP server，写入默认 role
 ```
 
-`threadwork init` writes:
+`threadwork init` 干这些事：
 
-- `~/.threadwork/roles/{researcher,coder,reviewer,writer}.yaml` (only if missing)
-- `~/.threadwork/db/threadwork.sqlite` (created on first memory write)
-- An entry in `~/.claude.json` under `mcpServers.threadwork`
+- 写 `~/.threadwork/roles/{researcher,coder,reviewer,writer}.yaml`
+  （仅当文件不存在时）
+- 准备 `~/.threadwork/db/threadwork.sqlite`（首次写记忆时创建）
+- 在 `~/.claude.json` 的 `mcpServers.threadwork` 下加一条记录
 
-It also takes a backup of `~/.claude.json` to `~/.claude.json.bak.<timestamp>`
-before writing. If you want to see the proposed change without applying it:
+写盘前会把 `~/.claude.json` 备份到 `~/.claude.json.bak.<时间戳>`。想先
+看会改什么再下手：
 
 ```bash
 threadwork init --dry-run
@@ -36,7 +38,7 @@ threadwork init --dry-run
 
 ## Windows
 
-PowerShell:
+PowerShell：
 
 ```powershell
 npm install -g threadwork-cli
@@ -44,55 +46,51 @@ threadwork --version
 threadwork init
 ```
 
-A few Windows-specific notes:
+Windows 特别注意：
 
-- The MCP registration writes the binary path with forward slashes; if
-  Claude Code is configured for a non-default profile, point `init` at it
-  with `--claude-config <path>`.
-- `threadwork init` writes UTF-8 without BOM. Some editors will add a BOM
-  on save and break the JSON; if you hand-edit the file, make sure you save
-  as UTF-8 (no BOM).
-- If you have an existing `mcpServers` block, `init` merges into it — it
-  does not overwrite siblings. Run with `--dry-run` first if you want to
-  inspect the merge.
+- MCP 注册写的是正斜杠路径；Claude Code 用了非默认 profile 的话，
+  传 `--claude-config <路径>` 给 init。
+- `threadwork init` 写入 UTF-8 无 BOM。某些编辑器保存时会偷加 BOM
+  把 JSON 弄坏；手动改的话务必保存为 UTF-8 (no BOM)。
+- 已经有 `mcpServers` 块时 init 会**合并**进去，不覆盖兄弟键。先
+  `--dry-run` 看一眼合并结果再写盘。
 
-## Safe rewrite of `~/.claude.json`
+## `~/.claude.json` 安全改写协议
 
-`~/.claude.json` is the single most sensitive file Threadwork touches. The
-`init` flow guarantees the following, in this order:
+`~/.claude.json` 是 Threadwork 触碰的最敏感文件。`init` 流程按这个
+顺序保证安全：
 
-1. **Read.** Parse the existing file (or start from `{}` if it does not exist).
-2. **Backup.** Write the original verbatim to `~/.claude.json.bak.<unix-ts>`.
-   If the original parsed cleanly, the backup is a byte-identical copy.
-3. **Merge.** Threadwork only touches the `mcpServers.threadwork` key. Every
-   other key — including other MCP servers, project entries, and account
-   settings — is preserved.
-4. **Validate.** The merged document is JSON-stringified and parsed back
-   before being written, so a malformed merge fails before any disk write.
-5. **Write.** Atomic rename: write to `~/.claude.json.new`, fsync, rename.
-   The original is replaced only if the new file lands successfully.
+1. **读取。** 解析现有文件（不存在时从 `{}` 起步）。
+2. **备份。** 把原文件原样写到 `~/.claude.json.bak.<unix-时间戳>`。
+   如果原文件能正常解析，备份是字节级副本。
+3. **合并。** Threadwork 只动 `mcpServers.threadwork` 一个键。其他
+   所有键——包括其他 MCP server、project 条目、账号设置——一律保留。
+4. **校验。** 合并后的对象 JSON.stringify 再 parse 一次；任何失败
+   就在写盘前抛错。
+5. **写入。** 原子重命名：先写到 `~/.claude.json.new`，fsync，
+   再 rename 覆盖。只有新文件落地成功，原文件才会被替换。
 
-If anything in steps 1–4 fails, no write happens and the original file is
-left untouched. The backup remains.
+如果 1–4 任何一步失败，**不会发生写盘动作**，原文件原样保留。
+备份文件留着。
 
-## Uninstall
+## 卸载
 
 ```bash
-threadwork uninstall           # removes mcpServers.threadwork entry; keeps memory db
-threadwork uninstall --purge   # also deletes ~/.threadwork/{roles,db}
+threadwork uninstall           # 移除 mcpServers.threadwork 条目；保留记忆 db
+threadwork uninstall --purge   # 同时删 ~/.threadwork/{roles,db}
 npm uninstall -g threadwork-cli
 ```
 
-`uninstall` honours the same backup protocol as `init`. `--purge` deletes
-your roles and memory; if you want to keep them but stop Claude Code from
-talking to Threadwork, drop `--purge`.
+`uninstall` 走和 `init` 一样的备份协议。`--purge` 会删掉你的角色和
+记忆；只想让 Claude Code 不再调 Threadwork 但保留这些文件，就别加
+`--purge`。
 
-## Verifying
+## 验证
 
 ```bash
-claude mcp list                # should show "threadwork"
-threadwork roles list          # should show 4 default roles
+claude mcp list                # 应该列出 "threadwork"
+threadwork roles list          # 应该列出 4 个默认角色
 ```
 
-If `claude mcp list` does not show `threadwork`, see
-[troubleshooting.md](./troubleshooting.md).
+`claude mcp list` 没显示 `threadwork`，看
+[troubleshooting.md](./troubleshooting.md)。

@@ -71,6 +71,7 @@ asciinema 脚本在 [bench/demo.cast](./bench/demo.cast)。本地用
 - [docs/troubleshooting.md](./docs/troubleshooting.md) — 跑挂了去看哪儿
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — 贡献指南（alpha 阶段先收 issue）
 - [SECURITY.md](./SECURITY.md) — 安全报告流程
+- [CHANGELOG.md](./CHANGELOG.md) — 版本变更记录
 
 ## License
 

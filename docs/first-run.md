@@ -1,70 +1,72 @@
-# First run
+[English](./first-run.en.md) | **简体中文**
 
-Goal: in 60 seconds, run an orchestration pattern that spawns two roles,
-writes to memory, and produces a replay you can open in a browser.
+# 第一次跑起来
 
-## 0. Prerequisites
+目标：60 秒内跑通一个 orchestration pattern——会 spawn 两个角色、写
+一次记忆、产出一个浏览器能打开的 replay。
 
-You ran `threadwork init`. `claude mcp list` shows `threadwork`.
+## 0. 准备
 
-## 1. Open a Claude Code session
+你已经跑过 `threadwork init`，`claude mcp list` 列出了 `threadwork`。
 
-Just `claude` from a directory you are working in. The Threadwork skill is
-loaded automatically because the MCP server is registered globally.
+## 1. 进 Claude Code session
 
-## 2. Trigger the research-then-write pattern
+在你正在工作的目录下直接 `claude`。Threadwork skill 会自动加载，
+因为 MCP server 已经全局注册了。
 
-In the session, ask Claude to use the Threadwork skill:
+## 2. 触发 research-then-write 模式
+
+在 session 里让 Claude 用 Threadwork skill：
 
 ```
 Use the threadwork skill to research current React state-management
 options and then have the writer role draft a one-paragraph recommendation.
 ```
 
-What happens:
+发生了什么：
 
-1. The `researcher` role yaml is loaded and its system prompt is applied
-   to the first sub-agent.
-2. That sub-agent writes its findings to memory as one or more episodes.
-3. The `writer` role yaml is loaded; the writer sub-agent recalls those
-   episodes via `memory_recall_episodes` and produces the recommendation.
-4. Every step writes a row to the `traces` table, automatically.
+1. 加载 `researcher` 角色 yaml，把它的 system prompt 套到第一个
+   sub-agent 上。
+2. 那个 sub-agent 把调研发现以一条或多条 episode 写进记忆。
+3. 加载 `writer` 角色 yaml；writer sub-agent 通过
+   `memory_recall_episodes` 召回那些 episode，产出推荐结论。
+4. 每一步都自动写一行进 `traces` 表。
 
-## 3. Find your `task_id`
+## 3. 找你的 `task_id`
 
-Claude prints the `task_id` when the orchestration finishes. It is also
-the most recent row in the trace table:
+orchestration 跑完时 Claude 会打印 `task_id`。它也是 trace 表里最
+新一行：
 
 ```bash
-threadwork replay --last       # convenience: picks the most recent task_id
+threadwork replay --last       # 便捷写法：用最新 task_id
 ```
 
-Or, if you saw the id in the session:
+或者你看到了 session 里的 id：
 
 ```bash
 threadwork replay <task_id>
 ```
 
-The HTML viewer lands at `./.threadwork/replay/<task_id>.html`. Add
-`--serve` to open it in your default browser.
+HTML viewer 落到 `./.threadwork/replay/<task_id>.html`。加 `--serve`
+直接在默认浏览器打开。
 
-## 4. What the replay shows you
+## 4. Replay 里能看到啥
 
-- One row per role (a "swim lane"): researcher on top, writer below.
-- One block per step: memory writes, recalls, and the role transition.
-- Clicking any block opens a detail panel with the full content (the
-  prompt, the episode text, the bm25 score on a recall).
+- 每个角色一行（一条 swim lane）：researcher 在上，writer 在下。
+- 每一步一个块：memory 写、memory 召回、角色切换。
+- 点任意块会展开详情面板——完整 prompt、完整 episode 文本、召回时
+  的 bm25 分数。
 
-This is the wow-point of v0.1. If something looks wrong in the agent's
-output, the replay tells you which step produced it.
+这是 v0.1 的 wow-point。如果 agent 输出哪儿不对劲，replay 会告诉你
+是哪一步搞砸的。
 
-## 5. Tweak a role and run again
+## 5. 改一个角色，再跑一次
 
-Edit `~/.threadwork/roles/writer.yaml`. The watcher picks up the change in
-under 500 ms — no Claude Code restart needed. Re-run the same prompt and
-diff the two replays.
+编辑 `~/.threadwork/roles/writer.yaml`。watcher 500 ms 内就会拾起
+变化——不用重启 Claude Code。重新跑同一个 prompt，diff 一下两次的
+replay。
 
-## Next
+## 下一步
 
-- [custom-role.md](./custom-role.md) — write your own role from scratch
-- [troubleshooting.md](./troubleshooting.md) — what to do when something is off
+- [custom-role.md](./custom-role.md)——从零写一个自己的角色
+- [troubleshooting.md](./troubleshooting.md)——出问题去看哪儿
