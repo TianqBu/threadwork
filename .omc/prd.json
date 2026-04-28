@@ -98,7 +98,7 @@
     {
       "id": "W8",
       "title": "README + demo GIF + docs + awesome-claude-code PR + npm dry-run",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "README.md hero region (above the fold) contains: logo placeholder, tagline (one CN + one EN line), >=4 badges (license/build/stars/discord/npm), a 3-line quickstart code block, a Why-not-X comparison table covering ruflo and deer-flow, and Discord link",
         "bench/demo.gif exists, file size <=2MB, derived from the W6.4 cast via asciinema + agg pipeline (or pre-rendered fallback if agg unavailable on Windows), no mouse cursor, ~30s loop",

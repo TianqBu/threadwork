@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "vitest run --dir __tests__"
+    "test": "vitest run --dir __tests__",
+    "prepack": "node ../../scripts/copy-roles.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.4",
