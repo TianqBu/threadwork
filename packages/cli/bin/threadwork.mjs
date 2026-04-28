@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-// Entry point published as the `threadwork` bin. The body is intentionally
-// thin: real subcommand wiring lands in W3 (roles list) / W4 (roles
-// show/create). For W2 the script just confirms the package installs and
-// resolves its compiled main.
+// Entry point published as the `threadwork` bin. W3 wires up `roles list`;
+// W4 will add `roles show / roles create`; W5+ will add `init`, `replay`,
+// `bench:run`, etc.
 
 import { helloThreadwork } from "../dist/index.js";
 
@@ -16,15 +15,38 @@ if (argv.length === 0 || argv[0] === "--version" || argv[0] === "-v") {
 if (argv[0] === "--help" || argv[0] === "-h") {
   console.log(`Usage: threadwork <command> [options]
 
-Available commands (filled in during W3/W4):
+Available commands:
   roles list             List discovered role yamls.
-  roles show <name>      Print the rendered role contract.
-  roles create <name>    Scaffold a new role yaml.
-  init                   Register the Threadwork MCP server in ~/.claude.json.
-  replay <task_id>       Open the step-level replay UI for a task.
+  roles show <name>      Print the rendered role contract. (W4)
+  roles create <name>    Scaffold a new role yaml. (W4)
+  init                   Register the Threadwork MCP server. (W7+)
+  replay <task_id>       Open the step-level replay UI for a task. (W7)
 `);
   process.exit(0);
 }
 
-console.error(`unknown command: ${argv[0]}\nrun 'threadwork --help' for usage.`);
+if (argv[0] === "roles" && argv[1] === "list") {
+  const { rolesList } = await import("../dist/cli/roles-list.js");
+  await rolesList();
+  process.exit(0);
+}
+
+if (argv[0] === "roles" && argv[1] === "show" && argv[2]) {
+  const { rolesShow } = await import("../dist/cli/roles-show.js");
+  const ok = await rolesShow({ name: argv[2] });
+  process.exit(ok ? 0 : 1);
+}
+
+if (argv[0] === "roles" && argv[1] === "create" && argv[2]) {
+  const { rolesCreate } = await import("../dist/cli/roles-create.js");
+  try {
+    await rolesCreate({ name: argv[2], force: argv.includes("--force") });
+    process.exit(0);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+}
+
+console.error(`unknown command: ${argv.join(" ")}\nrun 'threadwork --help' for usage.`);
 process.exit(1);

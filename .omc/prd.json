@@ -19,7 +19,7 @@
     {
       "id": "W1",
       "title": "Spike: minimal MCP echo + 2-subagent yaml-driven skill + trace_record path",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "experiments/w1/echo-mcp/ contains a runnable MCP stdio echo server using @modelcontextprotocol/sdk; README documents how to register in ~/.claude.json",
         "experiments/w1/skill.md spawns 2 sub-agents in parallel with prompts loaded from spike-role.*.yaml (W0 lineage)",
@@ -30,7 +30,7 @@
     {
       "id": "W2",
       "title": "Repo skeleton + license guardrails + cross-platform CI",
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "pnpm-workspace.yaml + package.json (root) + tsconfig.base.json exist; 4 packages scaffolded under packages/{cli,mcp-server,skill,replay-ui} each with package.json + tsconfig.json + src/index.ts",
         "package.json scripts: build, test, lint, license-check (uses license-checker --onlyAllow 'MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;CC0-1.0;CC-BY-4.0;Unlicense')",
