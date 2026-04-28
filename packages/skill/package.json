@@ -1,0 +1,12 @@
+{
+  "name": "threadwork-skill",
+  "version": "0.1.0",
+  "description": "Threadwork Claude Code Skill: orchestration patterns over yaml-defined roles.",
+  "license": "MIT",
+  "private": false,
+  "files": ["SKILL.md", "patterns"],
+  "scripts": {
+    "build": "node scripts/lint-skill.mjs",
+    "test": "node scripts/lint-skill.mjs"
+  }
+}

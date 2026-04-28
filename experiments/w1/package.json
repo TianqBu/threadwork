@@ -1,0 +1,14 @@
+{
+  "name": "threadwork-w1-spike",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "W1 spike — minimal MCP echo + trace servers driving the W0 yaml roles.",
+  "scripts": {
+    "smoke": "node trace-mcp/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "license": "MIT"
+}

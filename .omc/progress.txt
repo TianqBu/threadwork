@@ -1,0 +1,31 @@
+2026-04-28 — W0 complete.
+
+W0 deliverables:
+- docs/decisions/0000-prior-art.md (ADR with Skill/sub-agent spec, prior-art table, GO verdict)
+- experiments/w0/spike-role.{researcher,writer}.yaml
+- experiments/w0/spike.md (Claude Code Skill body)
+- experiments/w0/loader.mjs (zero-dep node script, W0.3 deterministic spike)
+- experiments/w0/README.md (run instructions)
+
+W0.3 verification: ran loader.mjs against both yamls; diff confirms divergent role name,
+system_prompt body, tools_allowed list, and budget block. Acceptance bullet
+"observable divergence" is met.
+
+Key learning from W0.1 prior-art: Anthropic ALREADY ships yaml-driven custom sub-agents
+via .claude/agents/*.md with frontmatter + body-as-system-prompt. So Threadwork's
+differentiation is NOT "yaml roles" (now table stakes) but the composition layer:
+orchestration patterns + memory MCP + step-level trace + replay UI. ADR records this;
+README in W8 must reframe the pitch accordingly.
+
+Tooling state:
+- node v24.13.0 OK
+- npm 11.6.2 OK
+- git 2.50.1 OK
+- pnpm: NOT INSTALLED — will activate via corepack at W2 start
+
+Empirical evidence cited in ADR: this very session's 6-agent planning team produced
+behavioral divergence driven by per-agent custom prompts, validating that role-prompt
+dispatch already works in Claude Code. The reproducer script avoids any LLM call so the
+W0 acceptance can be re-checked offline.
+
+Next: W1 spike (echo MCP + trace MCP smoke test + skill.md), then W2 repo scaffold.

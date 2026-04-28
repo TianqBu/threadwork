@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+*.tsbuildinfo
+.env
+.env.local
+.threadwork/
+~/.threadwork/
+coverage/
+.nyc_output/
+*.sqlite
+*.sqlite-journal
+spike-traces.sqlite
+bench/last-run.json
+bench/cost-report.json

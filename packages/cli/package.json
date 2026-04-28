@@ -1,0 +1,36 @@
+{
+  "name": "threadwork-cli",
+  "version": "0.1.0",
+  "description": "CLI-native multi-agent collaboration for Claude Code: hot-pluggable role yamls, persistent memory MCP, step-level trace replay. Bin: `threadwork`.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "threadwork": "./bin/threadwork.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "roles",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --dir __tests__"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.4",
+    "chokidar": "4.0.1",
+    "yaml": "2.6.1",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "vitest": "2.1.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

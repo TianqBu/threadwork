@@ -1,0 +1,25 @@
+{
+  "name": "threadwork-mcp-server",
+  "version": "0.1.0",
+  "description": "Threadwork MCP server: persistent memory (SQLite + FTS5) and step-level trace recorder.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "threadwork-mcp-server": "./bin/server.mjs"
+  },
+  "files": ["bin", "dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --dir __tests__"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.4",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "vitest": "2.1.5"
+  }
+}

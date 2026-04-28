@@ -1,0 +1,111 @@
+{
+  "project": "threadwork",
+  "version": "0.1.0-mvp",
+  "plan_ref": ".omc/plans/threadwork-mvp.md",
+  "created": "2026-04-28",
+  "stories": [
+    {
+      "id": "W0",
+      "title": "Prior-art validation (Anthropic Skill / Agent tool spec + empirical spike)",
+      "passes": true,
+      "acceptanceCriteria": [
+        "docs/decisions/0000-prior-art.md exists with: Anthropic Skill spec URL + version + key API signatures",
+        "Same ADR lists >=3 prior-art repos (e.g., ruflo, deer-flow, awesome-claude-code, OMC) with file:line references showing how they pass system prompts to sub-agents",
+        "experiments/w0/spike-role.researcher.yaml + spike-role.writer.yaml exist with distinct system_prompt content",
+        "experiments/w0/spike.md (skill) and experiments/w0/loader.mjs script exist; running loader.mjs with each yaml produces observably divergent prompt assembly output",
+        "ADR ends with explicit go/no-go verdict for entering W1"
+      ]
+    },
+    {
+      "id": "W1",
+      "title": "Spike: minimal MCP echo + 2-subagent yaml-driven skill + trace_record path",
+      "passes": false,
+      "acceptanceCriteria": [
+        "experiments/w1/echo-mcp/ contains a runnable MCP stdio echo server using @modelcontextprotocol/sdk; README documents how to register in ~/.claude.json",
+        "experiments/w1/skill.md spawns 2 sub-agents in parallel with prompts loaded from spike-role.*.yaml (W0 lineage)",
+        "experiments/w1/trace-mcp/ contains an MCP server that writes trace_record events to spike-traces.sqlite; sqlite3 query returns >=4 rows after a smoke run",
+        "SPIKE_RESULTS.md committed with go/no-go decision and concrete reproducer commands"
+      ]
+    },
+    {
+      "id": "W2",
+      "title": "Repo skeleton + license guardrails + cross-platform CI",
+      "passes": false,
+      "acceptanceCriteria": [
+        "pnpm-workspace.yaml + package.json (root) + tsconfig.base.json exist; 4 packages scaffolded under packages/{cli,mcp-server,skill,replay-ui} each with package.json + tsconfig.json + src/index.ts",
+        "package.json scripts: build, test, lint, license-check (uses license-checker --onlyAllow 'MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;CC0-1.0;CC-BY-4.0;Unlicense')",
+        "LICENSE_AUDIT.md exists at repo root listing all direct and transitive deps with their SPDX identifiers (initial state: empty deps OK; CI gate enforces license whitelist as deps grow)",
+        ".github/workflows/ci.yml runs lint + build + test + license-check on macos-latest, ubuntu-latest, windows-latest, node 20 + 22 matrix",
+        "Naming verification: docs/decisions/0002-name-threadwork.md records npm/GitHub availability check or fallback chosen (bastion-agent / orchard-agents / weave-agents)"
+      ]
+    },
+    {
+      "id": "W3",
+      "title": "Role yaml schema + role loader with hot-reload + roles list CLI",
+      "passes": false,
+      "acceptanceCriteria": [
+        "packages/cli/src/role/schema.ts exports a zod schema for: name, description, system_prompt, tools_allowed (string[]), budget.max_tokens (int), budget.max_duration_sec (int)",
+        "packages/cli/src/role/loader.ts: scans ~/.threadwork/roles/*.yaml (global) and ./.threadwork/roles/*.yaml (project, project overrides global); chokidar watcher emits change events within 500ms in tests",
+        "Unit tests in packages/cli/__tests__/role-schema.test.ts cover one happy case and 4 invalid yaml cases (missing name, bad budget type, unknown field, empty system_prompt)",
+        "packages/cli/bin/threadwork.mjs (CLI entry) implements `threadwork roles list` printing a table of {name, source(global|project), tools_count}; integration test asserts output row count matches yaml file count"
+      ]
+    },
+    {
+      "id": "W4",
+      "title": "4 default roles + 3 orchestration patterns + roles show/create CLI + skill markdown",
+      "passes": false,
+      "acceptanceCriteria": [
+        "roles/researcher.yaml, roles/coder.yaml, roles/reviewer.yaml, roles/writer.yaml exist; each yaml validates against the W3 schema and contains a non-trivial system_prompt (>=200 chars), explicit tools_allowed, and budget fields",
+        "packages/skill/skill.md is a Claude Code Skill that documents 3 orchestration patterns: research-then-write (sequential), parallel-review (3 reviewers vote), code-review-fix (loop, max 3 iter). Each pattern has a worked example block.",
+        "packages/cli implements `threadwork roles show <name>` (prints rendered system_prompt + meta) and `threadwork roles create <name>` (scaffolds yaml from a template into ./.threadwork/roles/, validated by loader before write)",
+        "Integration test packages/cli/__tests__/orchestration.test.ts: with a mock LLM, runs research-then-write end-to-end and asserts role transitions are logged in expected order"
+      ]
+    },
+    {
+      "id": "W5",
+      "title": "Memory MCP: schema + write tools + bench fixture + cost projector",
+      "passes": false,
+      "acceptanceCriteria": [
+        "packages/mcp-server/src/db/schema.sql defines tables episodes(id, task_id, role, ts, content), facts(id, key, value, confidence, source_episode_id), working_context(session_id, key, value, expires_at) and an FTS5 virtual table over episodes(content)",
+        "packages/mcp-server exposes MCP tools memory_write_episode, memory_write_fact, memory_set_working with zod input validation, content-hash dedup, and 1MB-per-task size cap; unit tests cover validation, dedup, and the cap",
+        "docs/decisions/0001-no-embeddings-v01.md records the decision to use FTS5 only in v0.1 with rationale and v0.2 reopen criteria",
+        "bench/demo-task.yaml fixture exists specifying input_prompt, expected_episode_count (25), role_sequence, max_tokens; pnpm bench:run executes the fixture against a mock LLM in <30s and writes bench/last-run.json",
+        "pnpm bench:cost reads bench/last-run.json + Anthropic public pricing (committed in bench/pricing.json) and writes bench/cost-report.json projecting real-API cost; test asserts projection field is present and numeric"
+      ]
+    },
+    {
+      "id": "W6",
+      "title": "Memory recall + role memory integration + replay JSON dump + demo cast",
+      "passes": false,
+      "acceptanceCriteria": [
+        "MCP tools memory_recall_episodes(query, k=5) (FTS5-ranked), memory_recall_facts(key), memory_get_working(session_id, key) implemented with unit tests; recall returns rows ordered by FTS5 rank score",
+        "All 4 default role yamls updated to include memory_recall in tools_allowed and memory-aware language in system_prompt; an integration test exercises the writer role recalling an earlier researcher episode",
+        "packages/replay-ui/src/json-dump.ts + CLI subcommand `threadwork replay <task_id> --json` reads SQLite traces+episodes for the task and writes a normalized JSON document; smoke test asserts >=10 trace events appear in the output for a bench-task run",
+        "bench/demo.cast (asciinema recording) committed showing init -> run -> replay --json end-to-end on a clean checkout"
+      ]
+    },
+    {
+      "id": "W7",
+      "title": "trace_record middleware + polished replay UI + closed beta scaffolding",
+      "passes": false,
+      "acceptanceCriteria": [
+        "MCP tool trace_record(task_id, role, event_type, content, parent_event_id?) writes to a traces table with FK to episodes; an automatic middleware records a trace event for every memory_* call without role-side action",
+        "packages/replay-ui generates a single-file static HTML (embedded JSON, vanilla JS, no framework) implementing a per-role swim-lane timeline with click-to-detail panel; DOM snapshot test asserts presence of >=2 swim-lanes, >=10 events, and detail panel shell",
+        "`threadwork replay <task_id>` (no --json) writes the HTML to <cwd>/.threadwork/replay/<task_id>.html; --serve flag opens the file in the user's default browser via the `open` package",
+        "docs/alpha-beta.md exists with: invite-list template, issue-template (.github/ISSUE_TEMPLATE/alpha-feedback.md), and a checklist for inviting >=5 testers from OMC/Claude Code Discord (note: actual recruitment is user-driven; this story only delivers the artifacts to enable it)"
+      ]
+    },
+    {
+      "id": "W8",
+      "title": "README + demo GIF + docs + awesome-claude-code PR + npm dry-run",
+      "passes": false,
+      "acceptanceCriteria": [
+        "README.md hero region (above the fold) contains: logo placeholder, tagline (one CN + one EN line), >=4 badges (license/build/stars/discord/npm), a 3-line quickstart code block, a Why-not-X comparison table covering ruflo and deer-flow, and Discord link",
+        "bench/demo.gif exists, file size <=2MB, derived from the W6.4 cast via asciinema + agg pipeline (or pre-rendered fallback if agg unavailable on Windows), no mouse cursor, ~30s loop",
+        "docs/{install,first-run,custom-role,troubleshooting}.md exist; install.md covers macOS/Linux/Windows including a section on ~/.claude.json safe rewrite (backup, dry-run, merge with existing MCP entries) and an uninstall cleanup section",
+        "docs/awesome-claude-code-pr.md drafts the PR description and entry; LAUNCH.md drafts 3 HN title variants + a hero blurb",
+        "`pnpm publish --dry-run` from packages/cli succeeds with no errors; package.json version is exactly 0.1.0; license field is MIT"
+      ]
+    }
+  ]
+}

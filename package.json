@@ -1,0 +1,33 @@
+{
+  "name": "threadwork-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CLI-native multi-agent collaboration tool for Claude Code: hot-pluggable role yamls, persistent memory MCP, step-level trace replay.",
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint \"packages/*/src/**/*.ts\" \"packages/*/__tests__/**/*.ts\"",
+    "format": "prettier --write \"packages/*/src/**/*.ts\" \"packages/*/__tests__/**/*.ts\"",
+    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "license-check": "license-checker --production --onlyAllow \"MIT;Apache-2.0;BSD-3-Clause;BSD-2-Clause;ISC;CC0-1.0;CC-BY-4.0;Unlicense;0BSD\" --excludePrivatePackages"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "eslint": "^9.15.0",
+    "license-checker": "^25.0.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}
