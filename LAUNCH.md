@@ -36,7 +36,7 @@ It is MIT, npm-installable, and works on macOS/Linux/Windows. v0.1.0
 is intentionally small: no embeddings, no consolidation, no web
 dashboard. The whole MVP is ~3k lines.
 
-Repo: https://github.com/REPLACE_OWNER/threadwork
+Repo: https://github.com/TianqBu/threadwork
 Demo gif: README hero
 Why-not-X table: README
 

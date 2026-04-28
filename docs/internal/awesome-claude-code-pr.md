@@ -6,7 +6,7 @@ Target list section: **Skills / Tools** (whichever the maintainer routes it to)
 ## Suggested entry
 
 ```markdown
-- [threadwork](https://github.com/REPLACE_OWNER/threadwork) — CLI-native
+- [threadwork](https://github.com/TianqBu/threadwork) — CLI-native
   multi-agent collaboration for Claude Code. Hot-pluggable role yamls,
   persistent memory MCP (SQLite + FTS5), and step-level trace replay
   rendered as a single static HTML file. Pitch: *ruflo for people who do
@@ -43,7 +43,7 @@ Most existing entries are either single skills or whole frameworks. Threadwork i
 ## Status
 
 v0.1.0, MIT, in closed alpha as of <date>. CI green on
-macOS/Linux/Windows × Node 20/22. License-checker gate enforces MIT/
+macOS/Linux/Windows × Node 22/24. License-checker gate enforces MIT/
 Apache-2.0/BSD-3/BSD-2/ISC only on direct + transitive deps.
 ```
 
