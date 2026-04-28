@@ -28,6 +28,7 @@
     "@types/node": "^22.9.0",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
+    "@vitest/coverage-v8": "2.1.5",
     "eslint": "^9.15.0",
     "license-checker": "^25.0.1",
     "prettier": "^3.3.3",

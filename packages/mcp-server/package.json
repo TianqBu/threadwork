@@ -9,7 +9,7 @@
   "bin": {
     "threadwork-mcp-server": "./bin/server.mjs"
   },
-  "files": ["bin", "dist"],
+  "files": ["bin", "dist", "THIRD-PARTY-LICENSES.md"],
   "engines": {
     "node": ">=22.5.0"
   },

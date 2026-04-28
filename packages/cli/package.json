@@ -14,7 +14,8 @@
     "dist",
     "roles",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD-PARTY-LICENSES.md"
   ],
   "engines": {
     "node": ">=22.5.0"
