@@ -25,6 +25,16 @@ updates:
           - "open"
           - "yaml"
           - "zod"
+    # vitest 4 requires vite 6; bumping the pair must happen together as
+    # a deliberate step. eslint 10 follows the same pattern. Skip major
+    # bumps for these until the pairing is handled manually.
+    ignore:
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "deps"
 
