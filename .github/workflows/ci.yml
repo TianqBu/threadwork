@@ -32,14 +32,18 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Build before Typecheck and Lint: packages/cli imports
+      # `threadwork-replay-ui` as a workspace dep, and its dist/*.d.ts is
+      # produced by the build step. Without this order tsc fails with
+      # TS2307 on a clean checkout.
+      - name: Build
+        run: pnpm run build
+
       - name: Typecheck
         run: pnpm run typecheck
 
       - name: Lint
         run: pnpm run lint
-
-      - name: Build
-        run: pnpm run build
 
       - name: Test
         run: pnpm run test
